@@ -1,0 +1,290 @@
+{
+  "name": "svml",
+  "docstring": "",
+  "kind": "module",
+  "children": [
+    {
+      "name": "SVMLClient",
+      "docstring": "SVML API client. Authenticates with auth.svml.dev and calls api.svml.dev endpoints.\nIncludes retry logic and LOG_LEVEL-based logging.\nAPI and auth base URLs can be overridden by SVML_API_BASE and SVML_AUTH_BASE env vars.\nOnly supports API key authentication.",
+      "kind": "class",
+      "children": [
+        {
+          "name": "__init__",
+          "docstring": "",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "api_base",
+          "docstring": "",
+          "kind": "variable",
+          "children": []
+        },
+        {
+          "name": "auth_base",
+          "docstring": "",
+          "kind": "variable",
+          "children": []
+        },
+        {
+          "name": "api_key",
+          "docstring": "",
+          "kind": "variable",
+          "children": []
+        },
+        {
+          "name": "token",
+          "docstring": "",
+          "kind": "variable",
+          "children": []
+        },
+        {
+          "name": "max_retries",
+          "docstring": "",
+          "kind": "variable",
+          "children": []
+        },
+        {
+          "name": "initial_delay",
+          "docstring": "",
+          "kind": "variable",
+          "children": []
+        },
+        {
+          "name": "exponential_backoff",
+          "docstring": "",
+          "kind": "variable",
+          "children": []
+        },
+        {
+          "name": "session",
+          "docstring": "",
+          "kind": "variable",
+          "children": []
+        },
+        {
+          "name": "session_api",
+          "docstring": "",
+          "kind": "variable",
+          "children": []
+        },
+        {
+          "name": "authenticate",
+          "docstring": "The type of the None singleton.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "generate",
+          "docstring": "The type of the None singleton.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "validate",
+          "docstring": "The type of the None singleton.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "correct",
+          "docstring": "The type of the None singleton.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "compare",
+          "docstring": "The type of the None singleton.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "refine",
+          "docstring": "The type of the None singleton.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "analyze",
+          "docstring": "The type of the None singleton.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__module__",
+          "docstring": "",
+          "kind": "variable",
+          "children": []
+        },
+        {
+          "name": "__firstlineno__",
+          "docstring": "",
+          "kind": "variable",
+          "children": []
+        },
+        {
+          "name": "__doc__",
+          "docstring": "",
+          "kind": "variable",
+          "children": []
+        },
+        {
+          "name": "__static_attributes__",
+          "docstring": "",
+          "kind": "variable",
+          "children": []
+        },
+        {
+          "name": "__dict__",
+          "docstring": "dictionary for instance variables",
+          "kind": "variable",
+          "children": []
+        },
+        {
+          "name": "__weakref__",
+          "docstring": "list of weak references to the object",
+          "kind": "variable",
+          "children": []
+        },
+        {
+          "name": "__new__",
+          "docstring": "Create and return a new object.  See help(type) for accurate signature.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__repr__",
+          "docstring": "Return repr(self).",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__hash__",
+          "docstring": "Return hash(self).",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__str__",
+          "docstring": "Return str(self).",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__getattribute__",
+          "docstring": "Return getattr(self, name).",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__setattr__",
+          "docstring": "Implement setattr(self, name, value).",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__delattr__",
+          "docstring": "Implement delattr(self, name).",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__lt__",
+          "docstring": "Return self<value.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__le__",
+          "docstring": "Return self<=value.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__eq__",
+          "docstring": "Return self==value.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__ne__",
+          "docstring": "Return self!=value.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__gt__",
+          "docstring": "Return self>value.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__ge__",
+          "docstring": "Return self>=value.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__reduce_ex__",
+          "docstring": "Helper for pickle.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__reduce__",
+          "docstring": "Helper for pickle.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__getstate__",
+          "docstring": "Helper for pickle.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__subclasshook__",
+          "docstring": "Abstract classes can override this to customize issubclass().\n\nThis is invoked early on by abc.ABCMeta.__subclasscheck__().\nIt should return True, False or NotImplemented.  If it returns\nNotImplemented, the normal algorithm is used.  Otherwise, it\noverrides the normal algorithm (and the outcome is cached).",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__init_subclass__",
+          "docstring": "This method is called when a class is subclassed.\n\nThe default implementation does nothing. It may be\noverridden to extend subclasses.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__format__",
+          "docstring": "Default object formatter.\n\nReturn str(self) if format_spec is empty. Raise TypeError otherwise.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__sizeof__",
+          "docstring": "Size of object in memory, in bytes.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__dir__",
+          "docstring": "Default dir() implementation.",
+          "kind": "function",
+          "children": []
+        },
+        {
+          "name": "__class__",
+          "docstring": "the object's class",
+          "kind": "variable",
+          "children": []
+        }
+      ]
+    },
+    {
+      "name": "with_retry",
+      "docstring": "Decorator for retrying a function call with exponential backoff.\nUses self.max_retries, self.initial_delay, self.exponential_backoff if present, else defaults.",
+      "kind": "function",
+      "children": []
+    }
+  ]
+}

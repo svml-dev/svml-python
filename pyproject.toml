@@ -1,0 +1,7 @@
+[project]
+name = "svml"
+version = "1.0.0"
+description = "SVML Python SDK"
+authors = [{ name="Jasdeep Jaitla", email="jasdeep@svml.ai" }]
+readme = "README.md"
+requires-python = ">=3.8" 

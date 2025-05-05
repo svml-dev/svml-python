@@ -1,0 +1,347 @@
+{
+  "name": "SVMLClient",
+  "docstring": "type: class\n\nSVML API client. Authenticates with auth.svml.dev and calls api.svml.dev endpoints.\nIncludes retry logic and LOG_LEVEL-based logging.\nAPI and auth base URLs can be overridden by SVML_API_BASE and SVML_AUTH_BASE env vars.\nOnly supports API key authentication.",
+  "kind": "class",
+  "init": {
+    "docstring": "Initialize the SVMLClient.\n\nRequired Args:\n    api_key (str): A valid SVML API key. You can obtain one from https://www.svml.dev.\n\nOptional Args:\n    api_base (str, optional): Override the base URL for the SVML API. Defaults to \"https://api.svml.dev\".\n    auth_base (str, optional): Override the base URL for authentication. Defaults to \"https://auth.svml.dev\".\n    max_retries (int, optional): Maximum number of retries for API calls. Defaults to 2.\n    initial_delay (float, optional): Initial delay (in seconds) between retries. Defaults to 0.5.\n    exponential_backoff (float, optional): Backoff multiplier for retries. Defaults to 2.0.\n\nNotes:\n    - Retry and backoff settings are also described in the `authenticate_with_api_key` method.\n    - All arguments are optional except for `api_key`, which is required for authentication.",
+    "params": [
+      {
+        "name": "api_base",
+        "type": "",
+        "default": null,
+        "description": "Override the base URL for the SVML API. Defaults to \"https://api.svml.dev\"."
+      },
+      {
+        "name": "auth_base",
+        "type": "",
+        "default": null,
+        "description": "Override the base URL for authentication. Defaults to \"https://auth.svml.dev\"."
+      },
+      {
+        "name": "api_key",
+        "type": "",
+        "default": null,
+        "description": "A valid SVML API key. You can obtain one from https://www.svml.dev."
+      },
+      {
+        "name": "max_retries",
+        "type": "",
+        "default": 2,
+        "description": "Maximum number of retries for API calls. Defaults to 2."
+      },
+      {
+        "name": "initial_delay",
+        "type": "",
+        "default": 0.5,
+        "description": "Initial delay (in seconds) between retries. Defaults to 0.5."
+      },
+      {
+        "name": "exponential_backoff",
+        "type": "",
+        "default": 2.0,
+        "description": "Backoff multiplier for retries. Defaults to 2.0."
+      }
+    ]
+  },
+  "methods": [
+    {
+      "name": "set_default_model",
+      "docstring": "Set the default model to use for all requests if no model is provided.\nIf models are available (after authentication), validates the model.\nIf models are not yet available, sets the value and validates after authentication.",
+      "params": [
+        {
+          "name": "model",
+          "type": "",
+          "default": "",
+          "description": ""
+        }
+      ],
+      "return_type": null
+    },
+    {
+      "name": "set_default_svml_version",
+      "docstring": "Set the default SVML version to use for all requests if no svml_version is provided.\nIf svml_versions are available (after authentication), validates the version.\nIf svml_versions are not yet available, sets the value and validates after authentication.",
+      "params": [
+        {
+          "name": "svml_version",
+          "type": "",
+          "default": "",
+          "description": ""
+        }
+      ],
+      "return_type": null
+    },
+    {
+      "name": "authenticate",
+      "docstring": "Authenticates using the API key and stores the access token. Also fetches and stores available models and SVML versions for argument validation.\nValidates the current default_model against the fetched models list.",
+      "params": [],
+      "return_type": null
+    },
+    {
+      "name": "generate",
+      "docstring": "type: method\n\nGenerate SVML from natural language context using the SVML API.\n\nRequired Args:\n    context (str): Natural language context/prompt to convert to SVML.            \n    model (str): LLM model to use for generation (e.g., \"claude-3-5-haiku-latest\").            \n\nOptional Args:\n    svml_version (str, optional): SVML language version to use (e.g., \"1.2.2\"), default is \"latest\".\n    \n\nReturns:\n    GenerateResponse: The parsed response from the API, including request_id, result, metadata, input, output, and any extra fields.\n    \n\nRaises:\n    requests.HTTPError: If the API call fails.\n\nExample:\n    ```python client = SVMLClient(api_key=\"your_api_key\")\n    response = client.generate(context=\"Explain quantum entanglement.\", svml_version=\"1.2.2\", model=\"claude-3-5-haiku-latest\")\n    print(response.output)\n    ```",
+      "params": [
+        {
+          "name": "context",
+          "type": "string",
+          "default": "",
+          "description": "Natural language context/prompt to convert to SVML."
+        },
+        {
+          "name": "model",
+          "type": "string",
+          "default": null,
+          "description": "LLM model to use for generation (e.g., \"claude-3-5-haiku-latest\")."
+        },
+        {
+          "name": "svml_version",
+          "type": "string",
+          "default": null,
+          "description": "SVML language version to use (e.g., \"1.2.2\"), default is \"latest\"."
+        }
+      ],
+      "return_type": "GenerateResponse"
+    },
+    {
+      "name": "validate",
+      "docstring": "type: method\n\nValidate SVML syntax and structure using the SVML API.\n\nRequired Args:\n    svml (str): SVML string to validate.\nOptional Args:\n    svml_version (str, optional): SVML language version to use, default is \"latest\".\n\nReturns:\n    ValidateResponse: The parsed response from the API.\n\nRaises:\n    requests.HTTPError: If the API call fails.",
+      "params": [
+        {
+          "name": "svml",
+          "type": "string",
+          "default": "",
+          "description": "SVML string to validate."
+        },
+        {
+          "name": "svml_version",
+          "type": "string",
+          "default": null,
+          "description": "SVML language version to use, default is \"latest\"."
+        }
+      ],
+      "return_type": "ValidateResponse"
+    },
+    {
+      "name": "correct",
+      "docstring": "type: method\n\nCorrect SVML using the output from the validate endpoint and a model.\n\nRequired Args:\n    validate_api_output (dict): The output from the validate endpoint (must include 'input' and 'output').\n    model (str): LLM model to use for correction.\nOptional Args:\n    svml_version (str, optional): SVML language version to use, default is \"latest\".\n\nReturns:\n    CorrectResponse: The parsed response from the API.\n\nRaises:\n    requests.HTTPError: If the API call fails.",
+      "params": [
+        {
+          "name": "validate_api_output",
+          "type": "dict",
+          "default": "",
+          "description": "The output from the validate endpoint (must include 'input' and 'output')."
+        },
+        {
+          "name": "model",
+          "type": "string",
+          "default": null,
+          "description": "LLM model to use for correction."
+        },
+        {
+          "name": "svml_version",
+          "type": "string",
+          "default": null,
+          "description": "SVML language version to use, default is \"latest\"."
+        }
+      ],
+      "return_type": "CorrectResponse"
+    },
+    {
+      "name": "compare",
+      "docstring": "type: method\n\nCompare two SVML representations using the SVML API.\n\nRequired Args:\n    original_context (str): The original context string.\n    svml_a (str): SVML A string.\n    svml_b (str): SVML B string.\n    model (str): LLM model to use.\nOptional Args:\n    svml_version (str, optional): SVML language version to use, default is \"latest\".\n\nReturns:\n    CompareResponse: The parsed response from the API.\n\nRaises:\n    requests.HTTPError: If the API call fails.",
+      "params": [
+        {
+          "name": "original_context",
+          "type": "string",
+          "default": "",
+          "description": "The original context string."
+        },
+        {
+          "name": "svml_a",
+          "type": "string",
+          "default": "",
+          "description": "SVML A string."
+        },
+        {
+          "name": "svml_b",
+          "type": "string",
+          "default": "",
+          "description": "SVML B string."
+        },
+        {
+          "name": "model",
+          "type": "string",
+          "default": null,
+          "description": "LLM model to use."
+        },
+        {
+          "name": "svml_version",
+          "type": "string",
+          "default": null,
+          "description": "SVML language version to use, default is \"latest\"."
+        }
+      ],
+      "return_type": "CompareResponse"
+    },
+    {
+      "name": "compareFromGenerate",
+      "docstring": "type: method\n\nCompare two generate outputs using the SVML API.\n\nRequired Args:\n    generate_api_output_a: Output from generate endpoint (A).\n    generate_api_output_b: Output from generate endpoint (B).\n    model (str): LLM model to use.\nOptional Args:\n    svml_version (str, optional): SVML language version to use, default is \"latest\".\n\nReturns:\n    CompareResponse: The parsed response from the API.\n\nRaises:\n    requests.HTTPError: If the API call fails.\n    ValueError: If the original_context in the two generate outputs does not match.",
+      "params": [
+        {
+          "name": "generate_api_output_a",
+          "type": "",
+          "default": "",
+          "description": ""
+        },
+        {
+          "name": "generate_api_output_b",
+          "type": "",
+          "default": "",
+          "description": ""
+        },
+        {
+          "name": "model",
+          "type": "string",
+          "default": null,
+          "description": "LLM model to use."
+        },
+        {
+          "name": "svml_version",
+          "type": "string",
+          "default": null,
+          "description": "SVML language version to use, default is \"latest\"."
+        }
+      ],
+      "return_type": "CompareResponse"
+    },
+    {
+      "name": "refine",
+      "docstring": "type: method\n\nRefine SVML directly using the SVML API.\n\nRequired Args:\n    svml (str): SVML string to refine.\n    original_context (str): The original context for the SVML.\n    user_additional_context (str): Additional user context.\n    model (str): LLM model to use for refinement.\nOptional Args:\n    svml_version (str, optional): SVML language version to use, default is \"latest\".\n\nReturns:\n    RefineResponse: The parsed response from the API.\n\nRaises:\n    requests.HTTPError: If the API call fails.",
+      "params": [
+        {
+          "name": "svml",
+          "type": "string",
+          "default": "",
+          "description": "SVML string to refine."
+        },
+        {
+          "name": "original_context",
+          "type": "string",
+          "default": "",
+          "description": "The original context for the SVML."
+        },
+        {
+          "name": "user_additional_context",
+          "type": "string",
+          "default": "",
+          "description": "Additional user context."
+        },
+        {
+          "name": "model",
+          "type": "string",
+          "default": null,
+          "description": "LLM model to use for refinement."
+        },
+        {
+          "name": "svml_version",
+          "type": "string",
+          "default": null,
+          "description": "SVML language version to use, default is \"latest\"."
+        }
+      ],
+      "return_type": "RefineResponse"
+    },
+    {
+      "name": "refineFromGenerate",
+      "docstring": "type: method\n\nRefine SVML from generate output using the SVML API.\n\nRequired Args:\n    generate_api_output (dict): Output from the /generate endpoint.\n    user_additional_context (str): Additional user context.\n    model (str): LLM model to use for refinement.\nOptional Args:\n    svml_version (str, optional): SVML language version to use, default is \"latest\".\n\nReturns:\n    RefineResponse: The parsed response from the API.\n\nRaises:\n    requests.HTTPError: If the API call fails.",
+      "params": [
+        {
+          "name": "generate_api_output",
+          "type": "dict",
+          "default": "",
+          "description": "Output from the /generate endpoint."
+        },
+        {
+          "name": "user_additional_context",
+          "type": "string",
+          "default": "",
+          "description": "Additional user context."
+        },
+        {
+          "name": "model",
+          "type": "string",
+          "default": null,
+          "description": "LLM model to use for refinement."
+        },
+        {
+          "name": "svml_version",
+          "type": "string",
+          "default": null,
+          "description": "SVML language version to use, default is \"latest\"."
+        }
+      ],
+      "return_type": "RefineResponse"
+    },
+    {
+      "name": "refineFromCompare",
+      "docstring": "type: method\n\nRefine SVML from compare output using the SVML API.\n\nRequired Args:\n    compare_api_output (dict): Output from the /compare endpoint.\n    model (str): LLM model to use for refinement.\nOptional Args:\n    user_additional_context (str, optional): Additional user context.\n    svml_version (str, optional): SVML language version to use, default is \"latest\".\n\nReturns:\n    RefineResponse: The parsed response from the API.\n\nRaises:\n    requests.HTTPError: If the API call fails.",
+      "params": [
+        {
+          "name": "compare_api_output",
+          "type": "dict",
+          "default": "",
+          "description": "Output from the /compare endpoint."
+        },
+        {
+          "name": "model",
+          "type": "string",
+          "default": null,
+          "description": "LLM model to use for refinement."
+        },
+        {
+          "name": "user_additional_context",
+          "type": "string",
+          "default": null,
+          "description": "Additional user context."
+        },
+        {
+          "name": "svml_version",
+          "type": "string",
+          "default": null,
+          "description": "SVML language version to use, default is \"latest\"."
+        }
+      ],
+      "return_type": "RefineResponse"
+    },
+    {
+      "name": "analyze",
+      "docstring": "type: method\n\nAnalyze SVML for conceptual quality using the SVML API.\n\nRequired Args:\n    svml (str): SVML string to analyze.\nOptional Args:\n    svml_version (str, optional): SVML language version to use, default is \"latest\".\n    model (str, optional): LLM model to use.\n    dimensions (list, optional): List of analysis dimensions.\n\nReturns:\n    AnalyzeResponse: The parsed response from the API.\n\nRaises:\n    requests.HTTPError: If the API call fails.",
+      "params": [
+        {
+          "name": "svml",
+          "type": "string",
+          "default": "",
+          "description": "SVML string to analyze."
+        },
+        {
+          "name": "svml_version",
+          "type": "string",
+          "default": null,
+          "description": "SVML language version to use, default is \"latest\"."
+        },
+        {
+          "name": "model",
+          "type": "",
+          "default": null,
+          "description": "LLM model to use."
+        },
+        {
+          "name": "dimensions",
+          "type": "",
+          "default": null,
+          "description": "List of analysis dimensions."
+        }
+      ],
+      "return_type": "AnalyzeResponse"
+    }
+  ]
+}

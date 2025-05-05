@@ -1,0 +1,1 @@
+clear;pytest test-svml/test_generate.py

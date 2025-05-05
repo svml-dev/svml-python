@@ -1,0 +1,387 @@
+# SVMLClient (Python SDK)
+
+> type: class  SVML API client. Authenticates with auth.svml.dev and calls api.svml.dev endpoints. Includes retry logic and LOG_LEVEL-based logging. API and auth base URLs can be overridden by SVML_API_BASE and SVML_AUTH_BASE env vars. Only supports API key authentication.
+
+---
+
+## Constructor
+
+```python
+SVMLClient(api_key, api_base=None, auth_base=None, max_retries=None, initial_delay=None, exponential_backoff=None)
+```
+
+**Required Arguments:**
+- **api_key (str)**: A valid SVML API key. You can obtain one from https://www.svml.dev.
+
+**Optional Arguments:**
+- **api_base (str, optional)**: Override the base URL for the SVML API. Defaults to "https://api.svml.dev".
+- **auth_base (str, optional)**: Override the base URL for authentication. Defaults to "https://auth.svml.dev".
+- **max_retries (int, optional)**: Maximum number of retries for API calls. Defaults to 2.
+- **initial_delay (float, optional)**: Initial delay (in seconds) between retries. Defaults to 0.5.
+- **exponential_backoff (float, optional)**: Backoff multiplier for retries. Defaults to 2.0.
+
+**Notes:**
+- Retry and backoff settings are also described in the `authenticate_with_api_key` method.
+- All arguments are optional except for `api_key`, which is required for authentication.
+
+| Name | Type | Req | Description |
+|------|------|-----|-------------|
+| `api_key` | str | yes | A valid SVML API key. You can obtain one from https://www.svml.dev. |
+| `api_base` | str, optional | no | Override the base URL for the SVML API. Defaults to "https://api.svml.dev". |
+| `auth_base` | str, optional | no | Override the base URL for authentication. Defaults to "https://auth.svml.dev". |
+| `max_retries` | int, optional | no | Maximum number of retries for API calls. Defaults to 2. |
+| `initial_delay` | float, optional | no | Initial delay (in seconds) between retries. Defaults to 0.5. |
+| `exponential_backoff` | float, optional | no | Backoff multiplier for retries. Defaults to 2.0. |
+---
+
+## Methods
+
+
+## `set_default_model`
+
+Set the default model to use for all requests if no model is provided.
+
+
+## `set_default_svml_version`
+
+Set the default SVML version to use for all requests if no svml_version is provided.
+
+
+## `authenticate`
+
+Authenticates using the API key and stores the access token. Also fetches and stores available models and SVML versions for argument validation.
+
+
+## `generate`
+
+type: method
+
+**Required Arguments:**
+- **context (str)**: Natural language context/prompt to convert to SVML.
+- **model (str)**: LLM model to use for generation (e.g., "claude-3-5-haiku-latest").
+
+**Optional Arguments:**
+- **svml_version (str, optional)**: SVML language version to use (e.g., "1.2.2"), default is "latest".
+
+**Returns:**
+GenerateResponse: The parsed response from the API, including request_id, result, metadata, input, output, and any extra fields.
+
+**Raises:**
+requests.HTTPError: If the API call fails.
+
+**Example:**
+```python client = SVMLClient(api_key="your_api_key")
+response = client.generate(context="Explain quantum entanglement.", svml_version="1.2.2", model="claude-3-5-haiku-latest")
+print(response.output)
+```
+
+| Name | Type | Req | Description |
+|------|------|-----|-------------|
+| `context` | str | yes | Natural language context/prompt to convert to SVML. |
+| `model` | str | yes | LLM model to use for generation (e.g., "claude-3-5-haiku-latest"). |
+| `svml_version` | str, optional | no | SVML language version to use (e.g., "1.2.2"), default is "latest". |
+
+
+
+## `validate`
+
+type: method
+
+**Required Arguments:**
+- **svml (str)**: SVML string to validate.
+
+**Optional Arguments:**
+- **svml_version (str, optional)**: SVML language version to use, default is "latest".
+
+**Returns:**
+ValidateResponse: The parsed response from the API.
+
+**Raises:**
+requests.HTTPError: If the API call fails.
+
+| Name | Type | Req | Description |
+|------|------|-----|-------------|
+| `svml` | str | yes | SVML string to validate. |
+| `svml_version` | str, optional | no | SVML language version to use, default is "latest". |
+
+
+
+## `correct`
+
+type: method
+
+**Required Arguments:**
+- **validate_api_output (dict)**: The output from the validate endpoint (must include 'input' and 'output').
+- **model (str)**: LLM model to use for correction.
+
+**Optional Arguments:**
+- **svml_version (str, optional)**: SVML language version to use, default is "latest".
+
+**Returns:**
+CorrectResponse: The parsed response from the API.
+
+**Raises:**
+requests.HTTPError: If the API call fails.
+
+| Name | Type | Req | Description |
+|------|------|-----|-------------|
+| `validate_api_output` | dict | yes | The output from the validate endpoint (must include 'input' and 'output'). |
+| `model` | str | yes | LLM model to use for correction. |
+| `svml_version` | str, optional | no | SVML language version to use, default is "latest". |
+
+
+
+## `compare`
+
+type: method
+
+**Required Arguments:**
+- **original_context (str)**: The original context string.
+- **svml_a (str)**: SVML A string.
+- **svml_b (str)**: SVML B string.
+- **model (str)**: LLM model to use.
+
+**Optional Arguments:**
+- **svml_version (str, optional)**: SVML language version to use, default is "latest".
+
+**Returns:**
+CompareResponse: The parsed response from the API.
+
+**Raises:**
+requests.HTTPError: If the API call fails.
+
+| Name | Type | Req | Description |
+|------|------|-----|-------------|
+| `original_context` | str | yes | The original context string. |
+| `svml_a` | str | yes | SVML A string. |
+| `svml_b` | str | yes | SVML B string. |
+| `model` | str | yes | LLM model to use. |
+| `svml_version` | str, optional | no | SVML language version to use, default is "latest". |
+
+
+
+## `compareFromGenerate`
+
+type: method
+
+**Required Arguments:**
+- **generate_api_output_a**: Output from generate endpoint (A).
+- **generate_api_output_b**: Output from generate endpoint (B).
+- **model (str)**: LLM model to use.
+
+**Optional Arguments:**
+- **svml_version (str, optional)**: SVML language version to use, default is "latest".
+
+**Returns:**
+CompareResponse: The parsed response from the API.
+
+**Raises:**
+requests.HTTPError: If the API call fails.
+ValueError: If the original_context in the two generate outputs does not match.
+
+| Name | Type | Req | Description |
+|------|------|-----|-------------|
+| `generate_api_output_a` |  | yes | Output from generate endpoint (A). |
+| `generate_api_output_b` |  | yes | Output from generate endpoint (B). |
+| `model` | str | yes | LLM model to use. |
+| `svml_version` | str, optional | no | SVML language version to use, default is "latest". |
+
+
+
+## `refine`
+
+type: method
+
+**Required Arguments:**
+- **svml (str)**: SVML string to refine.
+- **original_context (str)**: The original context for the SVML.
+- **user_additional_context (str)**: Additional user context.
+- **model (str)**: LLM model to use for refinement.
+
+**Optional Arguments:**
+- **svml_version (str, optional)**: SVML language version to use, default is "latest".
+
+**Returns:**
+RefineResponse: The parsed response from the API.
+
+**Raises:**
+requests.HTTPError: If the API call fails.
+
+| Name | Type | Req | Description |
+|------|------|-----|-------------|
+| `svml` | str | yes | SVML string to refine. |
+| `original_context` | str | yes | The original context for the SVML. |
+| `user_additional_context` | str | yes | Additional user context. |
+| `model` | str | yes | LLM model to use for refinement. |
+| `svml_version` | str, optional | no | SVML language version to use, default is "latest". |
+
+
+
+## `refineFromGenerate`
+
+type: method
+
+**Required Arguments:**
+- **generate_api_output (dict)**: Output from the /generate endpoint.
+- **user_additional_context (str)**: Additional user context.
+- **model (str)**: LLM model to use for refinement.
+
+**Optional Arguments:**
+- **svml_version (str, optional)**: SVML language version to use, default is "latest".
+
+**Returns:**
+RefineResponse: The parsed response from the API.
+
+**Raises:**
+requests.HTTPError: If the API call fails.
+
+| Name | Type | Req | Description |
+|------|------|-----|-------------|
+| `generate_api_output` | dict | yes | Output from the /generate endpoint. |
+| `user_additional_context` | str | yes | Additional user context. |
+| `model` | str | yes | LLM model to use for refinement. |
+| `svml_version` | str, optional | no | SVML language version to use, default is "latest". |
+
+
+
+## `refineFromCompare`
+
+type: method
+
+**Required Arguments:**
+- **compare_api_output (dict)**: Output from the /compare endpoint.
+- **model (str)**: LLM model to use for refinement.
+
+**Optional Arguments:**
+- **user_additional_context (str, optional)**: Additional user context.
+- **svml_version (str, optional)**: SVML language version to use, default is "latest".
+
+**Returns:**
+RefineResponse: The parsed response from the API.
+
+**Raises:**
+requests.HTTPError: If the API call fails.
+
+| Name | Type | Req | Description |
+|------|------|-----|-------------|
+| `compare_api_output` | dict | yes | Output from the /compare endpoint. |
+| `model` | str | yes | LLM model to use for refinement. |
+| `user_additional_context` | str, optional | no | Additional user context. |
+| `svml_version` | str, optional | no | SVML language version to use, default is "latest". |
+
+
+
+## `analyze`
+
+type: method
+
+**Required Arguments:**
+- **svml (str)**: SVML string to analyze.
+
+**Optional Arguments:**
+- **svml_version (str, optional)**: SVML language version to use, default is "latest".
+- **model (str, optional)**: LLM model to use.
+- **dimensions (list, optional)**: List of analysis dimensions.
+
+**Returns:**
+AnalyzeResponse: The parsed response from the API.
+
+**Raises:**
+requests.HTTPError: If the API call fails.
+
+| Name | Type | Req | Description |
+|------|------|-----|-------------|
+| `svml` | str | yes | SVML string to analyze. |
+| `svml_version` | str, optional | no | SVML language version to use, default is "latest". |
+| `model` | str, optional | no | LLM model to use. |
+| `dimensions` | list, optional | no | List of analysis dimensions. |
+
+
+
+---
+
+# Response Classes
+
+## GenerateResponse
+
+Response from the /generate endpoint of the SVML API.
+
+| Field | Description |
+|-------|-------------|
+| `request_id` | Unique request identifier. |
+| `result` | Status/result string (e.g., "SUCCESS"). |
+| `svml_version` | The SVML language version used. |
+| `svml_credits` | Number of SVML credits used by this request |
+| `metadata` | Metadata about the request/response. |
+| `input` | The input parameters sent to the API. |
+| `output` | The generated SVML and justifications. |
+
+#### `metadata` structure
+
+```json
+- provider (str): LLM provider (e.g., "openai").
+- model (str): Model used for generation.
+- timestamp_start (str): Request start time (ISO8601).
+- timestamp_end (str): Request end time (ISO8601).
+- time_taken (str): Time taken for the request.
+- endpoint (str): API endpoint path.
+- api_version (str): API version.
+- request_id (str): Request ID (matches top-level).
+- HTTP_status (int): HTTP status code.
+```
+
+#### `input` structure
+
+```json
+- context (str): The original prompt/context.
+- svml_version (str): SVML version requested.
+- model (str): LLM Model requested for generating SVML
+```
+
+#### `output` structure
+
+```json
+- svml (str): The generated SVML string.
+- justifications (str): Justification text for the SVML in MD format
+```
+
+## ValidateResponse
+
+Response from the /validate endpoint of the SVML API.
+
+| Field | Description |
+|-------|-------------|
+| `request_id` | Unique request identifier. |
+| `result` | Status/result string (e.g., "SUCCESS"). |
+| `metadata` | Metadata about the request/response. |
+| `input` | The input parameters sent to the API. |
+| `output` | The validation results. |
+| `extra` | Any additional fields returned by the API. |
+
+#### `metadata` structure
+
+```json
+- timestamp_start (str): Request start time (ISO8601).
+- timestamp_end (str): Request end time (ISO8601).
+- time_taken (str): Time taken for the request.
+- usage (Any): Usage metadata (may be null).
+- endpoint (str): API endpoint path.
+- api_version (str): API version.
+- request_id (str): Request ID (matches top-level).
+```
+
+#### `input` structure
+
+```json
+- svml (str): The SVML string submitted for validation.
+- svml_version (str): The SVML version.
+```
+
+#### `output` structure
+
+```json
+- valid (bool): Whether the SVML is valid.
+- violations (list): List of violation objects (if any).
+- best_practices (list): List of best practice suggestions (if any).
+```
+
