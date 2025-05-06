@@ -18,7 +18,9 @@ def test_correct_with_invalid_svml(client):
     assert hasattr(response, 'svml_version')
     assert hasattr(response, 'svml_credits')
     assert hasattr(response, 'output')
+    assert hasattr(response, 'usage')
     assert isinstance(response.output, dict)
     assert 'svml' in response.output
-    # Add further assertions as needed
+    
+    
     
