@@ -19,6 +19,13 @@ def test_generate_svml_1(client):
     model = 'gpt-4.1-mini'
     response = client.generate(context=context, svml_version=svml_version, model=model)
     assert isinstance(response, dict) or hasattr(response, 'output')
+    # Assert top-level svml_version and svml_credits
+    if isinstance(response, dict):
+        assert 'svml_version' in response
+        assert 'svml_credits' in response
+    else:
+        assert hasattr(response, 'svml_version')
+        assert hasattr(response, 'svml_credits')
     output = response['output'] if isinstance(response, dict) else response.output
     assert 'svml' in output and isinstance(output['svml'], str)
 
@@ -30,5 +37,12 @@ def test_generate_svml_2(client):
     model = 'claude-3-5-sonnet-20241022'
     response = client.generate(context=context, svml_version=svml_version, model=model)
     assert isinstance(response, dict) or hasattr(response, 'output')
+    # Assert top-level svml_version and svml_credits
+    if isinstance(response, dict):
+        assert 'svml_version' in response
+        assert 'svml_credits' in response
+    else:
+        assert hasattr(response, 'svml_version')
+        assert hasattr(response, 'svml_credits')
     output = response['output'] if isinstance(response, dict) else response.output
     assert 'svml' in output and isinstance(output['svml'], str) 

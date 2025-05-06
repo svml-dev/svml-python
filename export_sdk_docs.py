@@ -9,6 +9,7 @@ import importlib.util
 import pkgutil
 from typing import get_type_hints
 import shutil
+import textwrap
 
 OUTPUT_DIR = "docs"
 OUTPUT_FILE = os.path.join(OUTPUT_DIR, "svml_public.json")
@@ -70,7 +71,8 @@ def parse_method_docstring(docstring):
     return sections
 
 def parse_response_docstring(docstring):
-    # Parse Attributes section, capturing multi-line indented blocks for each attribute
+    # Dedent docstring to normalize indentation
+    docstring = textwrap.dedent(docstring)
     if not docstring:
         return {'attributes': {}, 'example': ''}
     lines = docstring.split('\n')
@@ -82,7 +84,30 @@ def parse_response_docstring(docstring):
     current_attr = None
     current_desc = []
     example = ''
+    
+    # First pass: find and extract the Example section if it exists
+    example_start_idx = None
     for i, line in enumerate(lines):
+        if line.strip().startswith('Example:'):
+            example_start_idx = i
+            break
+    
+    if example_start_idx is not None:
+        # Capture lines after Example: until next section header or end
+        example_lines = []
+        for ex_line in lines[example_start_idx+1:]:
+            ex_line_stripped = ex_line.strip()
+            if ex_line_stripped and ex_line_stripped[0].isupper() and ex_line_stripped.endswith(':'):
+                break
+            example_lines.append(ex_line)
+        example = '\n'.join(example_lines).rstrip()
+    
+    # Second pass: process attributes
+    for i, line in enumerate(lines):
+        # Skip example section during attribute processing 
+        if example_start_idx is not None and i >= example_start_idx:
+            continue
+            
         l = line.rstrip('\n')
         if l.strip().startswith('Attributes:'):
             in_attrs = True
@@ -112,12 +137,10 @@ def parse_response_docstring(docstring):
                 continue
             if current_attr and (l.startswith('    ') or l.startswith('\t')):
                 current_desc.append(l.strip())
-        # Example section
-        if l.strip().startswith('Example:'):
-            example = '\n'.join(lines[i+1:]).strip()
-            break
+
     if current_attr:
         attr_desc[current_attr] = '\n'.join(current_desc).rstrip()
+    
     return {'attributes': attr_desc, 'example': example}
 
 def parse_class_docstring(docstring):
@@ -261,7 +284,7 @@ print(f"Public API documentation generated at {OUTPUT_FILE}")
 # MDX export improvements
 def parse_docstring_sections(docstring):
     """
-    Parse a Google-style docstring into sections: required_args, optional_args, returns, raises, example, notes.
+    Parse a Google-style docstring into sections: required_args, optional_args, returns, raises, example, notes, details.
     Returns a dict with lists of (name, type, desc) for args, and strings for other sections.
     """
     sections = {
@@ -270,7 +293,8 @@ def parse_docstring_sections(docstring):
         'returns': '',
         'raises': '',
         'example': '',
-        'notes': ''
+        'notes': '',
+        'details': ''
     }
     if not docstring:
         return sections
@@ -296,6 +320,9 @@ def parse_docstring_sections(docstring):
         elif l.startswith('Notes:'):
             current = 'notes'
             continue
+        elif l.startswith('Details:'):
+            current = 'details'
+            continue
         elif l == '' or l.startswith('---'):
             continue
         if current in ('required_args', 'optional_args'):
@@ -309,7 +336,7 @@ def parse_docstring_sections(docstring):
                 if m2:
                     name, desc = m2.groups()
                     sections[current].append((name.strip(), '', desc.strip()))
-        elif current in ('returns', 'raises', 'example', 'notes'):
+        elif current in ('returns', 'raises', 'example', 'notes', 'details'):
             if sections[current]:
                 sections[current] += '\n' + l
             else:
@@ -359,6 +386,7 @@ def mdx_method_section(method):
     out += mdx_section('Raises', sections['raises'])
     out += mdx_section('Example', sections['example'])
     out += mdx_section('Notes', sections['notes'])
+    out += mdx_section('Details', sections['details'])
     # Parameter table
     if sections['required_args'] or sections['optional_args']:
         all_args = sections['required_args'] + sections['optional_args']
@@ -404,8 +432,15 @@ with open(MDX_OUTPUT_FILE, "w") as f:
                     continue
                 doc = cls.__doc__ or ''
                 doc_type = get_docstring_type(doc)
+                # DEBUG: Print which class and docstring is being processed
+                dedented_doc = textwrap.dedent(doc)
+                print(f"[DEBUG] Processing {name} in {modname}")
+                print(f"[DEBUG] Dedented docstring for {name} (first 200 chars):\n{dedented_doc[:200]}\n---")
                 if doc_type == 'response':
                     parsed = parse_response_docstring(doc)
+                    # DEBUG: Print parsed example for AnalyzeResponse and CompareResponse
+                    if name in ("AnalyzeResponse", "CompareResponse"):
+                        print(f"[DEBUG] Parsed example for {name}:\n{parsed['example'][:500]}\n---")
                     f.write(render_response_to_mdx(parsed, name))
                 # (future: handle other types)
 

@@ -281,26 +281,266 @@ type: method
 **Optional Arguments:**
 - **svml_version (str, optional)**: SVML language version to use, default is "latest".
 - **model (str, optional)**: LLM model to use.
-- **dimensions (list, optional)**: List of analysis dimensions.
+- **dimensions (list, optional)**: List of analysis dimensions. If not provided, all available dimensions will be used.
 
 **Returns:**
-AnalyzeResponse: The parsed response from the API.
+AnalyzeResponse: The parsed response from the API, including overall_score, verdict, narrative, dimensions, and usage.
 
 **Raises:**
 requests.HTTPError: If the API call fails.
+
+**Example:**
+```python
+client = SVMLClient(api_key="your_api_key")
+response = client.analyze(svml="...", dimensions=["cognitive_divergence", "compression_signature"])
+print(response.dimensions["cognitive_divergence"]["score"])
+```
 
 | Name | Type | Req | Description |
 |------|------|-----|-------------|
 | `svml` | str | yes | SVML string to analyze. |
 | `svml_version` | str, optional | no | SVML language version to use, default is "latest". |
 | `model` | str, optional | no | LLM model to use. |
-| `dimensions` | list, optional | no | List of analysis dimensions. |
+| `dimensions` | list, optional | no | List of analysis dimensions. If not provided, all available dimensions will be used. |
 
 
 
 ---
 
 # Response Classes
+
+## AnalyzeResponse
+
+Response from the /analyze endpoint of the SVML API.
+
+| Field | Description |
+|-------|-------------|
+| `overall_score` | Overall score from the analysis (average of all dimension scores). |
+| `verdict` | High-level verdict/result string (e.g., "authentic"). |
+| `narrative` | Narrative explanation of the analysis. |
+| `dimensions` | Detailed analysis by dimension. |
+| `usage` | Usage metadata (e.g., total_tokens). |
+| `extra` | Any additional fields returned by the API. |
+
+#### `dimensions` structure
+
+```json
+- <dimension_name> (dict): Results for each requested dimension (see AnalyzeDimension enum).
+- score (float): Score for this dimension.
+- primary_finding (str): Summary of the main finding for this dimension.
+- scoring_details (dict): Detailed breakdown, varies by dimension, but may include:
+- dimension_analyses (dict): Sub-analyses for the dimension.
+- statistics (dict): Stats for the dimension (e.g., ambiguous/resolved terms).
+- well_resolved_examples (dict): Examples of resolved ambiguities.
+- unresolved_examples (dict): Examples of unresolved ambiguities.
+- improvement_suggestions (dict): Suggestions for improvement.
+```
+
+**Example:**
+```json
+    {
+        "overall_score": 0.86,
+        "verdict": "authentic",
+        "narrative": "The SVML document was analyzed across 6 dimensions. Verdict: authentic. Overall score: 0.86.",
+        "dimensions": {
+            "cognitive_divergence": {
+                "score": 0.85,
+                "primary_finding": "...",
+                "scoring_details": {
+                    "dimension_analyses": {
+                        "dimension": [
+                            {
+                                "@name": "concept_sequence_variations",
+                                "analysis": "...",
+                                "evidence": ["...", "..."]
+                            }
+                        ]
+                    },
+                    "score": "0.85",
+                    "primary_finding": "..."
+                }
+            },
+            "compression_signature": {
+                "score": 0.85,
+                "primary_finding": "...",
+                "scoring_details": { ... }
+            }
+        },
+        "usage": {
+            "total_tokens": 52855
+        }
+    }
+```
+
+## CompareResponse
+
+Response from the /compare endpoint of the SVML API.
+
+| Field | Description |
+|-------|-------------|
+| `request_id` | Unique request identifier. |
+| `result` | Status/result string (e.g., "SUCCESS"). |
+| `metadata` | Metadata about the request/response. |
+| `input` | The input parameters sent to the API. |
+| `output` | The comparison results. |
+| `extra` | Any additional fields returned by the API. |
+
+#### `metadata` structure
+
+```json
+- provider (str): LLM provider (e.g., "openai").
+- model (str): Model used for comparison.
+- timestamp_start (str): Request start time (ISO8601).
+- timestamp_end (str): Request end time (ISO8601).
+- time_taken (str): Time taken for the request.
+- endpoint (str): API endpoint path.
+- api_version (str): API version.
+- request_id (str): Request ID (matches top-level).
+- HTTP_status (int): HTTP status code.
+```
+
+#### `input` structure
+
+```json
+- original_context (str): The original context string.
+- svml_a (str): SVML A string.
+- justifications_a (str or null): Justifications for SVML A.
+- model_a (str): Model used for SVML A.
+- svml_b (str): SVML B string.
+- justifications_b (str or null): Justifications for SVML B.
+- model_b (str): Model used for SVML B.
+- model (str): Model used for comparison.
+- svml_version (str): SVML version used.
+```
+
+#### `output` structure
+
+```json
+- analysis_a (dict): Analysis of SVML A (strengths, weaknesses, score, justifications, suggestions, model).
+- analysis_b (dict): Analysis of SVML B (strengths, weaknesses, score, justifications, suggestions, model).
+```
+
+**Example:**
+```json
+        {
+            "request_id": "1b191c3e-5482-4f5c-9dca-c94e0066b3e4",
+            "metadata": {
+                "provider": "openai",
+                "model": "gpt-4.1-mini",
+                "timestamp_start": "2025-04-22T23:17:52.690594+00:00",
+                "timestamp_end": "2025-04-22T23:18:06.833157+00:00",
+                "time_taken": "14.14 seconds",
+                "endpoint": "/v1/compare",
+                "api_version": "v1",
+                "request_id": "1b191c3e-5482-4f5c-9dca-c94e0066b3e4",
+                "HTTP_status": 200
+            },
+            "result": "SUCCESS",
+            "input": {
+                "original_context": "Compare the following SVML representations.",
+                "svml_a": "#modern_workplace#{...}",
+                "justifications_a": null,
+                "model_a": "gpt-4.1-mini",
+                "svml_b": "==NETWORK-MESH==
+...",
+                "justifications_b": null,
+                "model_b": "claude-3-5-sonnet-20241022",
+                "model": "gpt-4.1-mini",
+                "svml_version": "1.2.1"
+            },
+            "output": {
+                "analysis_a": {
+                    "strengths": "...",
+                    "weaknesses": "...",
+                    "score": "...",
+                    "justifications": "...",
+                    "suggestions": "...",
+                    "model": "gpt-4.1-mini"
+                },
+                "analysis_b": {
+                    "strengths": "...",
+                    "weaknesses": "...",
+                    "score": "...",
+                    "justifications": "...",
+                    "suggestions": "...",
+                    "model": "claude-3-5-sonnet-20241022"
+                }
+            }
+        }
+```
+
+## CorrectResponse
+
+Response from the /correct endpoint of the SVML API.
+
+| Field | Description |
+|-------|-------------|
+| `request_id` | Unique request identifier. |
+| `result` | Status/result string (e.g., "SUCCESS"). |
+| `metadata` | Metadata about the request/response. |
+| `input` | The input parameters sent to the API. |
+| `output` | The correction results. |
+
+#### `metadata` structure
+
+```json
+- timestamp_start (str): Request start time (ISO8601).
+- timestamp_end (str): Request end time (ISO8601).
+- time_taken (str): Time taken for the request.
+- usage (Any): Usage metadata (may be null).
+- endpoint (str): API endpoint path.
+- api_version (str): API version.
+- request_id (str): Request ID (matches top-level).
+```
+
+#### `input` structure
+
+```json
+- svml (str): The SVML string submitted for correction.
+- svml_version (str): The SVML version.
+- model (str): LLM model used for correction.
+- validation (Any, optional): Validation output (if provided).
+```
+
+#### `output` structure
+
+```json
+- svml (str): The corrected SVML string.
+- corrections (list): List of corrections made (if any).
+- notes (str): Additional notes or explanations (if any).
+# Add any additional fields as needed
+```
+
+**Example:**
+```json
+    {
+        "request_id": "123e4567-e89b-12d3-a456-426614174000",
+        "result": "SUCCESS",
+        "metadata": {
+            "timestamp_start": "2025-05-01T12:00:00.000Z",
+            "timestamp_end": "2025-05-01T12:00:01.000Z",
+            "time_taken": "1.00 seconds",
+            "usage": null,
+            "endpoint": "/v1/correct",
+            "api_version": "v1",
+            "request_id": "123e4567-e89b-12d3-a456-426614174000"
+        },
+        "input": {
+            "svml": "#example#{...}",
+            "svml_version": "1.2.2",
+            "model": "gpt-4.1-mini",
+            "validation": null
+        },
+        "output": {
+            "svml": "#example#{...}",
+            "corrections": [
+                "Fixed operator usage in line 3",
+                "Standardized attention modifiers"
+            ],
+            "notes": "All corrections applied according to SVML 1.2.2 specification."
+        }
+    }
+```
 
 ## GenerateResponse
 
@@ -345,6 +585,118 @@ Response from the /generate endpoint of the SVML API.
 - justifications (str): Justification text for the SVML in MD format
 ```
 
+**Example:**
+```json
+    {
+        "request_id": "...",
+        "metadata": {
+            "provider": "openai",
+            "model": "gpt-4.1-mini",
+            "timestamp_start": "...",
+            "timestamp_end": "...",
+            "time_taken": "...",
+            "endpoint": "/v1/generate",
+            "api_version": "v1",
+            "request_id": "...",
+            "HTTP_status": 200
+        },
+        "result": "SUCCESS",
+        "svml_version": "1.2.1",
+        "svml_credits": 4391,
+        "input": {
+            "context": "...",
+            "svml_version": "1.2.1",
+            "model": "gpt-4.1-mini"
+        },
+        "output": {
+            "svml": "...",
+            "justifications": "..."
+        }
+    }
+```
+
+## RefineResponse
+
+Response from the /refine endpoint of the SVML API.
+
+| Field | Description |
+|-------|-------------|
+| `request_id` | Unique request identifier. |
+| `result` | Status/result string (e.g., "SUCCESS"). |
+| `metadata` | Metadata about the request/response. |
+| `input` | The input parameters sent to the API. |
+| `output` | The refinement results. |
+| `extra` | Any additional fields returned by the API. |
+
+#### `metadata` structure
+
+```json
+- provider (str): LLM provider (e.g., "openai").
+- model (str): Model used for refinement.
+- timestamp_start (str): Request start time (ISO8601).
+- timestamp_end (str): Request end time (ISO8601).
+- time_taken (str): Time taken for the request.
+- endpoint (str): API endpoint path.
+- api_version (str): API version.
+- request_id (str): Request ID (matches top-level).
+- HTTP_status (int): HTTP status code.
+```
+
+#### `input` structure
+
+```json
+- svml (str or null): The SVML string to refine (if direct refinement).
+- compare_api_output (dict or null): Output from /compare endpoint (if refining from compare).
+- generate_api_output (dict or null): Output from /generate endpoint (if refining from generate).
+- original_context (str): The original context for the SVML.
+- user_additional_context (str): Additional user context.
+- model (str): LLM model used for refinement.
+- svml_version (str): SVML version used.
+- refine_type (str): Type of refinement (e.g., "svml", "generate", etc.).
+```
+
+#### `output` structure
+
+```json
+- svml (str): The refined SVML string.
+- analysis (str): Analysis of the refinement.
+- improvements (str): List of improvements made.
+```
+
+**Example:**
+```json
+    {
+        "request_id": "1b789115-3900-44e9-bb85-bdd1c10fc085",
+        "metadata": {
+            "provider": "openai",
+            "model": "gpt-4.1-mini",
+            "timestamp_start": "2025-04-30T01:22:39.404588+00:00",
+            "timestamp_end": "2025-04-30T01:22:48.254480+00:00",
+            "time_taken": "8.85 seconds",
+            "endpoint": "/v1/refine",
+            "api_version": "v1",
+            "request_id": "1b789115-3900-44e9-bb85-bdd1c10fc085",
+            "HTTP_status": 200
+        },
+        "result": "SUCCESS",
+        "input": {
+            "svml": "#modern_workplace#{...}",
+            "compare_api_output": null,
+            "generate_api_output": null,
+            "original_context": "In the modern workplace, ...",
+            "user_additional_context": "Please focus on improving clarity and hierarchical structure.",
+            "model": "gpt-4.1-mini",
+            "svml_version": "1.2.1",
+            "refine_type": "svml"
+        },
+        "output": {
+            "svml": "#modern_workplace#{...}",
+            "analysis": "The refinement addressed ambiguity and structural inconsistencies ...",
+            "improvements": "- Inserted missing comma ..."
+        }
+    }
+```
+
 ## ValidateResponse
 
 Response from the /validate endpoint of the SVML API.
@@ -383,5 +735,31 @@ Response from the /validate endpoint of the SVML API.
 - valid (bool): Whether the SVML is valid.
 - violations (list): List of violation objects (if any).
 - best_practices (list): List of best practice suggestions (if any).
+```
+
+**Example:**
+```json
+    {
+        "request_id": "...",
+        "result": "SUCCESS",
+        "metadata": {
+            "timestamp_start": "...",
+            "timestamp_end": "...",
+            "time_taken": "...",
+            "usage": null,
+            "endpoint": "/v1/validate",
+            "api_version": "v1",
+            "request_id": "..."
+        },
+        "input": {
+            "svml": "...",
+            "svml_version": "1.2.2"
+        },
+        "output": {
+            "valid": true,
+            "violations": [],
+            "best_practices": []
+        }
+    }
 ```
 

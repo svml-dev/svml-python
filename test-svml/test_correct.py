@@ -8,10 +8,17 @@ def load_fixture(name):
     with open(os.path.join(FIXTURE_DIR, name), 'r') as f:
         return json.load(f)
 
-# Example test for correct endpoint (add real fixture names as available)
-def test_correct_example():
-    # Replace 'correct_example.json' with a real fixture if available
-    # fixture = load_fixture('correct_example.json')
-    # response = client.correct(**fixture['request'])
-    # assert isinstance(response, dict) or hasattr(response, 'output')
-    pass  # Placeholder for future correct endpoint tests 
+# Test for correct endpoint using the validate_invalid_svml.json fixture
+def test_correct_with_invalid_svml(client):
+    fixture = load_fixture('validate_invalid_svml.json')
+    response = client.correct(fixture)
+    print("Correct response:", response)
+    from svml.schemas.correct import CorrectResponse
+    assert isinstance(response, CorrectResponse)
+    assert hasattr(response, 'svml_version')
+    assert hasattr(response, 'svml_credits')
+    assert hasattr(response, 'output')
+    assert isinstance(response.output, dict)
+    assert 'svml' in response.output
+    # Add further assertions as needed
+    

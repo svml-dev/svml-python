@@ -314,7 +314,7 @@
     },
     {
       "name": "analyze",
-      "docstring": "type: method\n\nAnalyze SVML for conceptual quality using the SVML API.\n\nRequired Args:\n    svml (str): SVML string to analyze.\nOptional Args:\n    svml_version (str, optional): SVML language version to use, default is \"latest\".\n    model (str, optional): LLM model to use.\n    dimensions (list, optional): List of analysis dimensions.\n\nReturns:\n    AnalyzeResponse: The parsed response from the API.\n\nRaises:\n    requests.HTTPError: If the API call fails.",
+      "docstring": "type: method\n\nAnalyze SVML for conceptual quality using the SVML API.\n\nRequired Args:\n    svml (str): SVML string to analyze.\n\nOptional Args:\n    svml_version (str, optional): SVML language version to use, default is \"latest\".\n    model (str, optional): LLM model to use.\n    dimensions (list, optional): List of analysis dimensions. If not provided, all available dimensions will be used.\n        - Available dimensions are defined in the `AnalyzeDimension` enum in `svml.endpoints.analyze`:\n            - \"cognitive_divergence\"\n            - \"compression_signature\"\n            - \"metaphor_anchoring\"\n            - \"prompt_form_alignment\"\n            - \"author_trace\"\n            - \"ambiguity_resolution\"\n\nReturns:\n    AnalyzeResponse: The parsed response from the API, including overall_score, verdict, narrative, dimensions, and usage.\n\nRaises:\n    requests.HTTPError: If the API call fails.\n\nExample:\n    ```python\n    client = SVMLClient(api_key=\"your_api_key\")\n    response = client.analyze(svml=\"...\", dimensions=[\"cognitive_divergence\", \"compression_signature\"])\n    print(response.dimensions[\"cognitive_divergence\"][\"score\"])\n    ```",
       "params": [
         {
           "name": "svml",
@@ -338,7 +338,7 @@
           "name": "dimensions",
           "type": "",
           "default": null,
-          "description": "List of analysis dimensions."
+          "description": "List of analysis dimensions. If not provided, all available dimensions will be used."
         }
       ],
       "return_type": "AnalyzeResponse"
