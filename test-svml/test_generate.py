@@ -28,7 +28,8 @@ def test_generate_svml_1(client):
         assert hasattr(response, 'svml_credits')
     output = response['output'] if isinstance(response, dict) else response.output
     assert 'svml' in output and isinstance(output['svml'], str)
-
+    assert not hasattr(response, 'usage')
+    assert not hasattr(response.output, 'usage')
 
 def test_generate_svml_2(client):
     # Use a different prompt/context from fixture if available
@@ -46,3 +47,5 @@ def test_generate_svml_2(client):
         assert hasattr(response, 'svml_credits')
     output = response['output'] if isinstance(response, dict) else response.output
     assert 'svml' in output and isinstance(output['svml'], str) 
+    assert not hasattr(response, 'usage')
+    assert not hasattr(response.output, 'usage')

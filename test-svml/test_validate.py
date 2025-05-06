@@ -26,7 +26,9 @@ def test_validate_valid(client):
     else:
         assert hasattr(response, 'svml_version')
         assert hasattr(response, 'svml_credits')
-    # Optionally, check response['output'] for expected structure
+    assert not hasattr(response, 'usage')
+    assert not hasattr(response.output, 'usage')
+    
 
 def test_validate_invalid(client):
     svml = load_svml('invalid_svml.svml')
@@ -42,4 +44,5 @@ def test_validate_invalid(client):
     else:
         assert hasattr(response, 'svml_version')
         assert hasattr(response, 'svml_credits')
-    # Optionally, check response['output'] for expected structure 
+    assert not hasattr(response, 'usage')
+    assert not hasattr(response.output, 'usage')

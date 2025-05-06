@@ -54,6 +54,8 @@ def test_refine_svml(client):
         assert 'svml' in response.output
     elif isinstance(response, dict) and 'output' in response:
         assert 'svml' in response['output']
+    assert not hasattr(response, 'usage')
+    assert not hasattr(response.output, 'usage')
 
 def test_refine_from_generate(client):
     """Test refineFromGenerate with a generate API output"""
@@ -82,6 +84,8 @@ def test_refine_from_generate(client):
         assert 'svml' in response.output
     elif isinstance(response, dict) and 'output' in response:
         assert 'svml' in response['output']
+    assert not hasattr(response, 'usage')
+    assert not hasattr(response.output, 'usage')
 
 def test_refine_from_compare(client):
     """Test refineFromCompare with output from compareFromGenerate"""
@@ -110,3 +114,6 @@ def test_refine_from_compare(client):
         assert 'svml' in response.output
     elif isinstance(response, dict) and 'output' in response:
         assert 'svml' in response['output'] 
+        
+    assert not hasattr(response, 'usage')
+    assert not hasattr(response.output, 'usage')

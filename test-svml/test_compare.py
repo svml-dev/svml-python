@@ -34,7 +34,10 @@ def test_compare_svml_only(client):
     else:
         assert hasattr(response, 'svml_version')
         assert hasattr(response, 'svml_credits')
-    # Optionally, check response['output'] for expected structure
+    
+    assert not hasattr(response, 'usage')
+    assert not hasattr(response.output, 'usage')
+    
 
 def test_compare_with_justifications(client):
     generate1 = load_fixture('generate_1.json')
@@ -58,4 +61,7 @@ def test_compare_with_justifications(client):
     else:
         assert hasattr(response, 'svml_version')
         assert hasattr(response, 'svml_credits')
-    # Optionally, check response['output'] for expected structure 
+    
+    assert not hasattr(response, 'usage')
+    assert not hasattr(response.output, 'usage')
+    
