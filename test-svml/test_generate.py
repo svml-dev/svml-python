@@ -14,7 +14,7 @@ def load_prompt(name):
 
 def test_generate_svml_1(client):
     # Use a real prompt/context from fixture
-    context = load_prompt('generate_svml_1.svml') if os.path.exists(os.path.join(FIXTURE_DIR, 'generate_svml_1.svml')) else "In the modern workplace, collaboration between teams is essential for innovation, yet communication barriers often arise due to differing priorities, technical jargon, and organizational silos."
+    context = load_prompt('start_prompt_1.md') if os.path.exists(os.path.join(FIXTURE_DIR, 'start_prompt_1.md')) else "In the modern workplace, collaboration between teams is essential for innovation, yet communication barriers often arise due to differing priorities, technical jargon, and organizational silos."
     svml_version = '1.2.2'
     model = 'gpt-4.1-mini'
     response = client.generate(context=context, svml_version=svml_version, model=model)
@@ -33,7 +33,7 @@ def test_generate_svml_1(client):
 
 def test_generate_svml_2(client):
     # Use a different prompt/context from fixture if available
-    context = load_prompt('generate_svml_2.svml') if os.path.exists(os.path.join(FIXTURE_DIR, 'generate_svml_2.svml')) else "Describe the process of creative problem-solving in a team environment."
+    context = load_prompt('start_prompt_1.md') if os.path.exists(os.path.join(FIXTURE_DIR, 'start_prompt_1.md')) else "In the modern workplace, collaboration between teams is essential for innovation, yet communication barriers often arise due to differing priorities, technical jargon, and organizational silos."
     svml_version = '1.2.2'
     model = 'claude-3-5-sonnet-20241022'
     response = client.generate(context=context, svml_version=svml_version, model=model)

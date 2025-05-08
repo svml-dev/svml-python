@@ -59,7 +59,7 @@ fi
 if [ "$1" = "7" ]; then
   echo '--------------------------------analyze'
   echo 'REMOVE OLD REQUEST/RESPONSE RECORDS'
-  rm -rf /Users/jasdeep/Library/Mobile\ Documents/com~apple~CloudDocs/Cursor/SVSML/www/api-svml-dev/api-output/analyze/*
+  #rm -rf /Users/jasdeep/Library/Mobile\ Documents/com~apple~CloudDocs/Cursor/SVSML/www/api-svml-dev/api-output/analyze/*
   sleep 2
   pytest -s test-svml/test_analyze.py
 fi

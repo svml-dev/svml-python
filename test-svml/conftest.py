@@ -5,8 +5,9 @@ import os
 
 @pytest.fixture(scope="session")
 def client():
-    c = SVMLClient()
+    c = SVMLClient(max_retries=0)    
     if os.environ.get("SVML_API_KEY"):
+        c.api_key = os.environ.get("SVML_API_KEY")        
         c.authenticate()
     return c 
 
