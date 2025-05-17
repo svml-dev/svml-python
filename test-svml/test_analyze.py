@@ -1,6 +1,7 @@
 import os
 import pytest
 from svml.schemas.analyze import ALL_ANALYZE_DIMENSIONS
+from svml.schemas.common import StandardLLMSettingsParams
 import logging
 
 # Set up logger
@@ -15,10 +16,9 @@ def load_svml(name):
 def test_analyze_cognitive_divergence(client):
     logger.info(f"[INFO] Testing cognitive divergence")
     svml = load_svml('valid_svml.svml')
-    svml_version = '1.2.2'
-    model = 'claude-3-5-sonnet-20241022'
+    settings = StandardLLMSettingsParams(model='claude-3-5-sonnet-20241022', svml_version='1.2.2')
     requested_dimensions = ['cognitive_divergence']
-    response = client.analyze(svml=svml, svml_version=svml_version, model=model, dimensions=requested_dimensions)
+    response = client.analyze(svml=svml, dimensions=requested_dimensions, settings=settings)
     assert isinstance(response, dict) or hasattr(response, 'dimensions')
     if isinstance(response, dict):
         assert 'svml_version' in response
@@ -37,10 +37,9 @@ def test_analyze_cognitive_divergence(client):
 def test_analyze_compression_signature(client):
     logger.info(f"[INFO] Testing compression signature")
     svml = load_svml('valid_svml.svml')
-    svml_version = '1.2.2'
-    model = 'claude-3-5-sonnet-20241022'
+    settings = StandardLLMSettingsParams(model='claude-3-5-sonnet-20241022', svml_version='1.2.2')
     requested_dimensions = ['compression_signature']
-    response = client.analyze(svml=svml, svml_version=svml_version, model=model, dimensions=requested_dimensions)
+    response = client.analyze(svml=svml, dimensions=requested_dimensions, settings=settings)
     assert isinstance(response, dict) or hasattr(response, 'dimensions')
     if isinstance(response, dict):
         assert 'svml_version' in response
@@ -59,10 +58,9 @@ def test_analyze_compression_signature(client):
 def test_analyze_metaphor_anchoring(client):
     logger.info(f"[INFO] Testing metaphor anchoring")
     svml = load_svml('valid_svml.svml')
-    svml_version = '1.2.2'
-    model = 'claude-3-5-sonnet-20241022'
+    settings = StandardLLMSettingsParams(model='claude-3-5-sonnet-20241022', svml_version='1.2.2')
     requested_dimensions = ['metaphor_anchoring']
-    response = client.analyze(svml=svml, svml_version=svml_version, model=model, dimensions=requested_dimensions)
+    response = client.analyze(svml=svml, dimensions=requested_dimensions, settings=settings)
     assert isinstance(response, dict) or hasattr(response, 'dimensions')
     if isinstance(response, dict):
         assert 'svml_version' in response
@@ -81,10 +79,9 @@ def test_analyze_metaphor_anchoring(client):
 def test_analyze_prompt_form_alignment(client):
     logger.info(f"[INFO] Testing prompt form alignment")
     svml = load_svml('valid_svml.svml')
-    svml_version = '1.2.2'
-    model = 'claude-3-5-sonnet-20241022'
+    settings = StandardLLMSettingsParams(model='claude-3-5-sonnet-20241022', svml_version='1.2.2')
     requested_dimensions = ['prompt_form_alignment']
-    response = client.analyze(svml=svml, svml_version=svml_version, model=model, dimensions=requested_dimensions)
+    response = client.analyze(svml=svml, dimensions=requested_dimensions, settings=settings)
     assert isinstance(response, dict) or hasattr(response, 'dimensions')
     if isinstance(response, dict):
         assert 'svml_version' in response
@@ -103,10 +100,9 @@ def test_analyze_prompt_form_alignment(client):
 def test_analyze_author_trace(client):
     logger.info(f"[INFO] Testing author trace")
     svml = load_svml('valid_svml.svml')
-    svml_version = '1.2.2'
-    model = 'claude-3-5-sonnet-20241022'
+    settings = StandardLLMSettingsParams(model='claude-3-5-sonnet-20241022', svml_version='1.2.2')
     requested_dimensions = ['author_trace']
-    response = client.analyze(svml=svml, svml_version=svml_version, model=model, dimensions=requested_dimensions)
+    response = client.analyze(svml=svml, dimensions=requested_dimensions, settings=settings)
     assert isinstance(response, dict) or hasattr(response, 'dimensions')
     if isinstance(response, dict):
         assert 'svml_version' in response
@@ -125,10 +121,9 @@ def test_analyze_author_trace(client):
 def test_analyze_ambiguity_resolution(client):
     logger.info(f"[INFO] Testing ambiguity resolution")
     svml = load_svml('valid_svml.svml')
-    svml_version = '1.2.2'
-    model = 'claude-3-5-sonnet-20241022'
+    settings = StandardLLMSettingsParams(model='claude-3-5-sonnet-20241022', svml_version='1.2.2')
     requested_dimensions = ['ambiguity_resolution']
-    response = client.analyze(svml=svml, svml_version=svml_version, model=model, dimensions=requested_dimensions)
+    response = client.analyze(svml=svml, dimensions=requested_dimensions, settings=settings)
     assert isinstance(response, dict) or hasattr(response, 'dimensions')
     if isinstance(response, dict):
         assert 'svml_version' in response
@@ -147,10 +142,9 @@ def test_analyze_ambiguity_resolution(client):
 def test_analyze_two_dimensions(client):
     logger.info(f"[INFO] Testing two dimensions")
     svml = load_svml('valid_svml.svml')
-    svml_version = '1.2.2'
-    model = 'claude-3-5-sonnet-20241022'
+    settings = StandardLLMSettingsParams(model='claude-3-5-sonnet-20241022', svml_version='1.2.2')
     requested_dimensions = ['cognitive_divergence', 'compression_signature']
-    response = client.analyze(svml=svml, svml_version=svml_version, model=model, dimensions=requested_dimensions)
+    response = client.analyze(svml=svml, dimensions=requested_dimensions, settings=settings)
     assert isinstance(response, dict) or hasattr(response, 'dimensions')
     if isinstance(response, dict):
         assert 'svml_version' in response
@@ -170,10 +164,9 @@ def test_analyze_two_dimensions(client):
 def test_analyze_all_dimensions_claude35sonnet(client):
     logger.info(f"[INFO] Testing all dimensions with claude-3-5-sonnet-20241022")
     svml = load_svml('valid_svml.svml')
-    svml_version = '1.2.2'
-    model = 'claude-3-5-sonnet-20241022'
+    settings = StandardLLMSettingsParams(model='claude-3-5-sonnet-20241022', svml_version='1.2.2')
     requested_dimensions = ALL_ANALYZE_DIMENSIONS
-    response = client.analyze(svml=svml, svml_version=svml_version, model=model, dimensions=requested_dimensions)
+    response = client.analyze(svml=svml, dimensions=requested_dimensions, settings=settings)
     assert isinstance(response, dict) or hasattr(response, 'dimensions')
     if isinstance(response, dict):
         assert 'svml_version' in response
@@ -195,6 +188,7 @@ def test_analyze_all_dimensions_claude35sonnet(client):
 #     svml_version = '1.2.2'
 #     #model = 'claude-3-5-sonnet-20241022'
 #     model = 'gpt-4o-mini'
+#     settings = StandardLLMSettingsParams(model='gpt-4o-mini', svml_version='1.2.2')
 #     requested_dimensions = ALL_ANALYZE_DIMENSIONS
 #     response = client.analyze(svml=svml, svml_version=svml_version, model=model, dimensions=requested_dimensions)
 #     assert isinstance(response, dict) or hasattr(response, 'dimensions')

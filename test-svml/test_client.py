@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 def test_client_init():
     # Basic initialization test
     client = SVMLClient()
-    expected_api_base = os.environ.get("SVML_API_BASE", "https://api.svml.dev")
-    expected_auth_base = os.environ.get("SVML_AUTH_BASE", "https://auth.svml.dev")
+    expected_api_base = os.environ.get("SVML_API_BASE", "https://api.svml.dev") + "/v1"
+    expected_auth_base = os.environ.get("SVML_AUTH_BASE", "https://auth.svml.dev") + "/v1"
     logger.info(f"\napi_base: {client.api_base}")
     logger.info(f"auth_base: {client.auth_base}")
     logger.info(f"Environment variables:")

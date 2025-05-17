@@ -1,6 +1,8 @@
 import json
 import os
 import pytest
+from svml.schemas.common import StandardLLMSettingsParams
+from svml.schemas.correct import CorrectResponse
 
 FIXTURE_DIR = os.path.join(os.path.dirname(__file__), 'fixtures')
 
@@ -11,9 +13,10 @@ def load_fixture(name):
 # Test for correct endpoint using the validate_invalid_svml.json fixture
 def test_correct_with_invalid_svml(client):
     fixture = load_fixture('validate_invalid_svml.json')
-    response = client.correct(fixture)
+    settings = StandardLLMSettingsParams(model='gpt-4.1-mini', svml_version='1.2.2')
+    
+    response = client.correct(validate_api_output=fixture, settings=settings)
     print("Correct response:", response)
-    from svml.schemas.correct import CorrectResponse
     assert isinstance(response, CorrectResponse)
     assert hasattr(response, 'svml_version')
     assert hasattr(response, 'svml_credits')
