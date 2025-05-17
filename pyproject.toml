@@ -27,4 +27,4 @@ dependencies = [
 
 [project.urls]
 "Homepage" = "https://svml.dev"
-"Repository" = "https://github.com/svml-dev/svml-dev-nodejs" 
+"Repository" = "https://github.com/svml-dev/svml-python"   
