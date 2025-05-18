@@ -46,10 +46,11 @@ def test_compare_with_justifications(client):
     generate2 = load_fixture('generate_2.json')
     # Settings for the comparison LLM call itself
     comparison_settings = StandardLLMSettingsParams(model='gpt-4.1-mini', svml_version=generate1.get('svml_version', '1.2.2'))
-    # original_context = generate1['input']['context'] # This is handled by compareFromGenerate internally
+    original_context = generate1['input']['context'] # Extract original_context
     
     # Use the correct method for comparing from generate outputs
     response = client.compareFromGenerate(
+        original_context=original_context, # Pass original_context
         generate_api_output_a=generate1,
         generate_api_output_b=generate2,
         settings=comparison_settings # Settings for the compare LLM
